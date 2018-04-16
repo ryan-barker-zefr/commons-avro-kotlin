@@ -1,0 +1,53 @@
+// use SBT version as master
+def release = findProperty "release"
+def releaseVersion = new File('src/main/avro/version.txt').text.trim()
+if (release == "true") {
+    project.ext.set("version", releaseVersion)
+} else {
+    project.ext.set("version", releaseVersion + "-SNAPSHOT")
+}
+
+buildscript {
+
+    ext.kotlin_version = '1.2.21'
+    ext.aloha_score_version = '5.1.0'
+
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:0.14.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: "java"
+apply plugin: "kotlin"
+apply plugin: "com.commercehub.gradle.plugin.avro"
+apply plugin: 'maven-publish'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "org.apache.avro:avro:1.8.2"
+    compile "com.eharmony:aloha-avro-score-java:$aloha_score_version"
+}
+
+publishing {
+    repositories {
+        maven { url "https://zefr.jfrog.io/zefr/libs-releases" }
+        maven { url "https://zefr.jfrog.io/zefr/libs-snapshots" }
+        mavenLocal()
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            groupId "com.zefr.avro"
+            artifactId "commons-avro-java-kotlin"
+            version "${project.ext.version}"
+
+            from components.java
+        }
+    }
+}

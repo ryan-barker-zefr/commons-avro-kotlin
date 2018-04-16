@@ -1,0 +1,3 @@
+[submodule "src/main/avdl"]
+	path = src/main/avro
+	url = git@github.com:ryan-barker-zefr/commons-avro-avdl.git
